@@ -32,7 +32,6 @@ const Bot = ({botsPromises}) => {
 
     const handleDeleteBots = id =>{
         console.log(`bot to be deleted id ${id}`);
-
         fetch(`http://localhost:3000/bots/${id}`, {
             method : 'DELETE',
         }).then(res => res.json()).then(data=> {
@@ -66,7 +65,8 @@ const Bot = ({botsPromises}) => {
                 <h2>{bot.name} : {bot.email}</h2>
                 <button 
                 onClick={()=> handleDeleteBots(bot._id)}
-                className='cursor-pointer border border-gray-500 rounded-lg  px-4 focus:outline-lime-400'>X</button>
+                className='cursor-pointer border border-gray-500 rounded-l
+                g  px-4 focus:outline-lime-400'>X</button>
             </div>)}
         </div>
         </div>
