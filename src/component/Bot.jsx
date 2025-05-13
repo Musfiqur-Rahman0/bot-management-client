@@ -2,36 +2,50 @@ import React, { use, useState } from 'react';
 
 const Bot = ({botsPromises}) => {
    const initalBots = use(botsPromises);
-
-   const [id, setId]=useState(initalBots.length)
+    const [bots, setBots] = useState(initalBots)
   
     
 
     const handleAddForm = e => {
-        setId(id+1)
+       
         e.preventDefault();
         const newBot = {
-            id : id,
             name  : e.target.name.value,
             email : e.target.email.value,
         }
 
         console.log(newBot);
-        
-       
-        
-        
         fetch("http://localhost:3000/bots", {
             method : "post",
             headers : {
                 'content-type' : 'application/json',
             },
             body : JSON.stringify(newBot)
-        }).then(res =>res.json()).then(data => console.log(data))
+        }).then(res =>res.json()).then(data => {
+            if(data.insertedId){
+                newBot.id = data.insertedId;
+                setBots([...bots, newBot]);
+                e.target.reset();
+            }
+        })
     }
 
-  
+    const handleDeleteBots = id =>{
+        console.log(`bot to be deleted id ${id}`);
 
+        fetch(`http://localhost:3000/bots/${id}`, {
+            method : 'DELETE',
+        }).then(res => res.json()).then(data=> {
+            if(data.deletedCount){
+              const  remainingBots  =     bots.filter((bot)=> bot._id !== id)
+                setBots(remainingBots)
+                console.log("after delete", data)
+            }
+        })
+
+    }
+  
+    console.log(bots)
 
     return (
         <div>
@@ -48,9 +62,11 @@ const Bot = ({botsPromises}) => {
                 <div className="flex items-center justify-center"><input type="submit" value="Add Bot" className='border border-gray-300 rounded-full px-5 py-1  text-xs cursor-pointer active:scale-95' /></div>
             </form>
             <div className='flex flex-col gap-5 items-center justify-center mt-5'>
-            {initalBots.map(bot => <div key={bot.id} className='flex  items-center gap-5'>
+            {bots.map(bot => <div key={bot._id} className='flex  items-center gap-5'>
                 <h2>{bot.name} : {bot.email}</h2>
-                <button className='cursor-pointer'>X</button>
+                <button 
+                onClick={()=> handleDeleteBots(bot._id)}
+                className='cursor-pointer border border-gray-500 rounded-lg  px-4 focus:outline-lime-400'>X</button>
             </div>)}
         </div>
         </div>
